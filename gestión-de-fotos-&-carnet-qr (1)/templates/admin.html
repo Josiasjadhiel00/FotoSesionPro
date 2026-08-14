@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración | Sesión Fotográfica Multi-Institución</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- QRCode.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      padding-bottom: 3rem;
+    }
+    .stat-card {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.25rem;
+      backdrop-filter: blur(8px);
+      transition: transform 0.2s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+    .avatar-mini {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #38bdf8;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .avatar-mini:hover {
+      transform: scale(1.15);
+    }
+    .table-custom {
+      color: #f8fafc;
+      vertical-align: middle;
+    }
+    .table-custom th {
+      background-color: rgba(15, 23, 42, 0.9);
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 0.75rem;
+    }
+    .table-custom td {
+      background-color: rgba(30, 41, 59, 0.5);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 0.85rem 0.75rem;
+    }
+    .table-custom tbody tr:hover td {
+      background-color: rgba(51, 65, 85, 0.6);
+    }
+    .card-table-wrapper {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    .form-switch .form-check-input {
+      width: 2.5em;
+      height: 1.3em;
+      cursor: pointer;
+    }
+    .form-control-sm-custom {
+      background-color: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border-radius: 8px;
+      width: 70px;
+      text-align: center;
+    }
+    .modal-content-custom {
+      background-color: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      color: #fff;
+    }
+    .sortable-header {
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .sortable-header:hover {
+      background-color: rgba(56, 189, 248, 0.15) !important;
+      color: #38bdf8 !important;
+    }
+    .inst-badge-pill {
+      font-size: 0.72rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+    }
+    .inst-card-manage {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    /* BADGES HIGH CONTRAST */
+    .badge-inst {
+      background-color: #0284c7 !important;
+      color: #ffffff !important;
+      border: 1px solid #38bdf8 !important;
+      font-size: 0.73rem !important;
+      font-weight: 700 !important;
+      padding: 0.2rem 0.65rem !important;
+      border-radius: 50px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+    }
+
+    .badge-curso {
+      background-color: #0284c7 !important;
+      color: #ffffff !important;
+      border: 1px solid #0284c7 !important;
+      font-size: 0.73rem !important;
+      font-weight: 700 !important;
+      padding: 0.2rem 0.65rem !important;
+      border-radius: 50px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+    }
+
+    .badge-tanda {
+      background-color: #334155 !important;
+      color: #f8fafc !important;
+      border: 1px solid #475569 !important;
+      font-size: 0.73rem !important;
+      font-weight: 600 !important;
+      padding: 0.2rem 0.65rem !important;
+      border-radius: 50px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+    }
+
+    .badge-status-presente {
+      background-color: rgba(16, 185, 129, 0.2) !important;
+      color: #34d399 !important;
+      border: 1px solid #10b981 !important;
+      font-size: 0.78rem !important;
+      font-weight: 700 !important;
+      padding: 0.3rem 0.75rem !important;
+      border-radius: 50px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+    }
+
+    .badge-status-pendiente {
+      background-color: #f59e0b !important;
+      color: #0f172a !important; /* High contrast dark text on bright yellow */
+      border: 1.5px solid #b45309 !important;
+      font-size: 0.78rem !important;
+      font-weight: 800 !important;
+      padding: 0.3rem 0.75rem !important;
+      border-radius: 50px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      letter-spacing: 0.3px !important;
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-dark bg-dark bg-opacity-50 border-bottom border-secondary border-opacity-25 py-3 mb-4">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="/admin">
+        <div class="bg-primary text-white p-2 rounded-3 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+          <i class="bi bi-speedometer2 fs-5"></i>
+        </div>
+        <span class="fw-bold">Panel de Control Organizador</span>
+      </a>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button class="btn btn-info rounded-pill px-3 fw-semibold btn-sm" data-bs-toggle="modal" data-bs-target="#institucionesModal">
+          <i class="bi bi-building-add me-1"></i> Gestión de Instituciones
+        </button>
+        <a href="/escanear" class="btn btn-primary rounded-pill px-3 fw-semibold btn-sm">
+          <i class="bi bi-qr-code-scan me-1"></i> Escáner Door
+        </a>
+        <a href="/registro" class="btn btn-outline-light rounded-pill px-3 btn-sm">
+          <i class="bi bi-person-plus me-1"></i> Registro
+        </a>
+        <button class="btn btn-outline-warning rounded-pill px-3 btn-sm" data-bs-toggle="modal" data-bs-target="#changePassModal" title="Cambiar usuario o contraseña">
+          <i class="bi bi-key-fill me-1"></i> Clave
+        </button>
+        <a href="/logout" onclick="localStorage.removeItem('admin_token')" class="btn btn-outline-danger rounded-pill px-3 btn-sm" title="Cerrar Sesión">
+          <i class="bi bi-box-arrow-right me-1"></i> Salir
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- KPI Statistics Header -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-card d-flex align-items-center gap-3">
+          <div class="p-3 bg-primary bg-opacity-20 text-primary rounded-3">
+            <i class="bi bi-people-fill fs-3"></i>
+          </div>
+          <div>
+            <div class="text-secondary small fw-semibold">Total Registrados</div>
+            <div class="fs-3 fw-bold text-white">{{ stats.total }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card d-flex align-items-center gap-3">
+          <div class="p-3 bg-success bg-opacity-20 text-success rounded-3">
+            <i class="bi bi-check-circle-fill fs-3"></i>
+          </div>
+          <div>
+            <div class="text-secondary small fw-semibold">Presentes (Asistieron)</div>
+            <div class="fs-3 fw-bold text-success">{{ stats.presentes }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card d-flex align-items-center gap-3">
+          <div class="p-3 bg-warning bg-opacity-20 text-warning rounded-3">
+            <i class="bi bi-hourglass-split fs-3"></i>
+          </div>
+          <div>
+            <div class="text-secondary small fw-semibold">Pendientes</div>
+            <div class="fs-3 fw-bold text-warning">{{ stats.pendientes }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="stat-card d-flex align-items-center gap-3">
+          <div class="p-3 bg-info bg-opacity-20 text-info rounded-3">
+            <i class="bi bi-images fs-3"></i>
+          </div>
+          <div>
+            <div class="text-secondary small fw-semibold">Fotos Extras Requeridas</div>
+            <div class="fs-3 fw-bold text-info">{{ stats.total_fotos_extras }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters and Table Controls -->
+    <div class="card-table-wrapper p-4">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+          <h4 class="fw-bold mb-1 text-white"><i class="bi bi-table text-info me-2"></i>Lista de Estudiantes Registrados</h4>
+          <p class="text-secondary small mb-0">Gestión de estudiantes filtrados por institución, orden de llegada y asistencia.</p>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          <!-- Search Bar -->
+          <div class="input-group" style="max-width: 240px;">
+            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-search"></i></span>
+            <input type="text" id="searchInput" class="form-control bg-dark text-white border-secondary" placeholder="Buscar por nombre..." oninput="applyTableFilters()">
+            <button class="btn btn-outline-secondary d-none" id="clearSearchBtn" type="button" onclick="clearSearch()" title="Limpiar"><i class="bi bi-x-lg"></i></button>
+          </div>
+
+          <!-- Institution Filter -->
+          <div class="input-group" style="width: auto;">
+            <span class="input-group-text bg-dark border-secondary text-info"><i class="bi bi-building"></i></span>
+            <select id="institutionFilter" class="form-select bg-dark text-white border-secondary" style="width: auto; max-width: 200px;" onchange="applyTableFilters()">
+              <option value="todas">Todas las Instituciones</option>
+              <!-- Dinámico de Instituciones -->
+            </select>
+          </div>
+
+          <!-- Status Filter -->
+          <div class="input-group" style="width: auto;">
+            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-funnel"></i></span>
+            <select id="statusFilter" class="form-select bg-dark text-white border-secondary" style="width: auto;" onchange="applyTableFilters()">
+              <option value="todos">Todos los Estados</option>
+              <option value="Pendiente">Pendientes</option>
+              <option value="Presente">Presentes</option>
+            </select>
+          </div>
+
+          <!-- Sort Dropdown -->
+          <div class="input-group" style="width: auto;">
+            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-sort-down"></i></span>
+            <select id="sortSelect" class="form-select bg-dark text-white border-secondary" style="width: auto;" onchange="sortTable()">
+              <option value="order-asc">Orden: Menor a Mayor (#)</option>
+              <option value="order-desc">Orden: Mayor a Menor (#)</option>
+              <option value="name-asc">Nombre: A - Z</option>
+              <option value="name-desc">Nombre: Z - A</option>
+            </select>
+          </div>
+
+          <!-- Refresh Button -->
+          <button class="btn btn-outline-secondary text-white ms-auto ms-md-0" onclick="location.reload()" title="Actualizar datos">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Interactive Table -->
+      <div class="table-responsive">
+        <table class="table table-custom align-middle mb-0" id="studentsTable">
+          <thead>
+            <tr>
+              <th class="text-center sortable-header" style="width: 100px;" onclick="toggleSort('order')" title="Clic para ordenar por número de orden">
+                Orden <i id="sortIconOrder" class="bi bi-sort-numeric-down ms-1 text-info fw-bold"></i>
+              </th>
+              <th style="width: 70px;">Rostro</th>
+              <th class="sortable-header" onclick="toggleSort('name')" title="Clic para ordenar por nombre completo">
+                Estudiante e Institución <i id="sortIconName" class="bi bi-arrow-down-up ms-1 text-secondary"></i>
+              </th>
+              <th>Teléfono</th>
+              <th class="text-center">Asistencia</th>
+              <th class="text-center" style="min-width: 190px;">Fotos Extras</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- STUDENTS_TABLE_BODY -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal Gestión de Instituciones -->
+  <div class="modal fade" id="institucionesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content modal-content-custom border-info border-opacity-50">
+        <div class="modal-header border-secondary border-opacity-25">
+          <h5 class="modal-title fw-bold text-info"><i class="bi bi-building-fill me-2"></i>Administración de Instituciones</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          
+          <!-- Formularios para agregar/editar institución -->
+          <div class="card bg-dark bg-opacity-60 border border-secondary border-opacity-25 p-3 mb-4 rounded-4">
+            <h6 class="fw-bold text-white mb-3" id="instFormTitle"><i class="bi bi-plus-circle me-1 text-info"></i> Crear / Editar Institución</h6>
+            
+            <form id="formInstitucion" enctype="multipart/form-data">
+              <input type="hidden" id="instId" name="id" value="">
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-8">
+                  <label class="form-label text-light small fw-semibold">Nombre de Institución <span class="text-danger">*</span></label>
+                  <input type="text" id="instNombre" name="nombre" class="form-control form-control-sm bg-dark text-white border-secondary" required placeholder="Ej. Liceo Panamericano">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label text-light small fw-semibold">Código / Siglas</label>
+                  <input type="text" id="instCodigo" name="codigo" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Ej. LP-2026">
+                </div>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label text-light small fw-semibold">Logo URL o Archivo</label>
+                  <input type="text" id="instLogoText" name="logo_url_text" class="form-control form-control-sm bg-dark text-white border-secondary mb-1" placeholder="URL de la imagen del logo">
+                  <input type="file" id="instLogoFile" name="logo" accept="image/*" class="form-control form-control-sm bg-dark text-white border-secondary">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-light small fw-semibold">Fondo del Formulario (URL o Archivo)</label>
+                  <input type="text" id="instFondoText" name="fondo_url_text" class="form-control form-control-sm bg-dark text-white border-secondary mb-1" placeholder="URL de la imagen de fondo">
+                  <input type="file" id="instFondoFile" name="fondo" accept="image/*" class="form-control form-control-sm bg-dark text-white border-secondary">
+                </div>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label text-light small fw-semibold">Color Temático Principal</label>
+                  <div class="d-flex gap-2 align-items-center">
+                    <input type="color" id="instColor" name="color_primario" class="form-control form-control-color bg-dark border-secondary" value="#0284c7" title="Elegir color">
+                    <span id="instColorCode" class="small text-secondary fw-mono">#0284c7</span>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label text-light small fw-semibold">Diseño Visual de Carnet</label>
+                  <select id="instDiseno" name="diseno_carnet" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="clasico">Azul Clásico (Predeterminado)</option>
+                    <option value="esmeralda">Verde Esmeralda</option>
+                    <option value="elegante_dorado">Dorado Elegante</option>
+                    <option value="rojo_corporativo">Rojo Corporativo</option>
+                    <option value="moderno_oscuro">Gris Moderno Oscuro</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label text-light small fw-semibold">Descripción Breve</label>
+                <input type="text" id="instDesc" name="descripcion" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Ej. Institución Educativa Secundaria">
+              </div>
+
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="resetInstForm()">Limpiar / Cancelar</button>
+                <button type="submit" class="btn btn-sm btn-info rounded-pill px-4 fw-semibold" id="btnSaveInst">Guardar Institución</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Tabla de Instituciones Existentes -->
+          <h6 class="fw-bold text-white mb-2"><i class="bi bi-list-stars me-1 text-info"></i> Instituciones Registradas</h6>
+          <div class="table-responsive">
+            <table class="table table-custom align-middle mb-0" id="tableInstituciones">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">Logo</th>
+                  <th>Institución</th>
+                  <th>Diseño / Color</th>
+                  <th class="text-center">Estudiantes</th>
+                  <th class="text-end">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyInstituciones">
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Ficha Técnica de Estudiante -->
+  <div class="modal fade" id="studentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-content-custom">
+        <div class="modal-header border-secondary border-opacity-25">
+          <h5 class="modal-title fw-bold" id="modalStudentTitle">Ficha Técnica de Estudiante</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center p-4">
+          <img id="modalAvatar" src="" alt="Foto" class="rounded-circle mb-3 border border-3 border-info" style="width: 140px; height: 140px; object-fit: cover;">
+          <h3 id="modalName" class="fw-bold text-white mb-1">---</h3>
+          <p id="modalOrder" class="badge bg-primary fs-6 px-3 py-2 rounded-pill mb-3">Orden #---</p>
+          
+          <div class="bg-dark bg-opacity-50 p-3 rounded-4 text-start mb-3 border border-secondary border-opacity-25">
+            <div class="row g-2 small">
+              <div class="col-6 text-secondary">ID Único:</div>
+              <div class="col-6 fw-semibold text-white text-end" id="modalId">---</div>
+
+              <div class="col-6 text-secondary">Institución:</div>
+              <div class="col-6 fw-semibold text-info text-end" id="modalInstitucion">---</div>
+
+              <div class="col-6 text-secondary">Teléfono:</div>
+              <div class="col-6 fw-semibold text-info text-end" id="modalPhone">---</div>
+
+              <div class="col-6 text-secondary">Curso / Sección:</div>
+              <div class="col-6 fw-semibold text-info text-end" id="modalCurso">---</div>
+
+              <div class="col-6 text-secondary">Tanda / Horario:</div>
+              <div class="col-6 fw-semibold text-white text-end" id="modalTanda">---</div>
+
+              <div class="col-6 text-secondary">Estado Asistencia:</div>
+              <div class="col-6 fw-semibold text-end" id="modalStatus">---</div>
+
+              <div class="col-6 text-secondary">Hora de Llegada:</div>
+              <div class="col-6 fw-semibold text-white text-end" id="modalTime">---</div>
+
+              <div class="col-6 text-secondary">Fotos Extras:</div>
+              <div class="col-6 fw-semibold text-warning text-end" id="modalExtras">---</div>
+
+              <div class="col-6 text-secondary">Fecha Registro:</div>
+              <div class="col-6 text-white-50 text-end" id="modalDate">---</div>
+            </div>
+          </div>
+
+          <div class="text-center mt-3">
+            <div class="small text-secondary mb-2">CÓDIGO QR REGISTRADO</div>
+            <div id="modalQrcode" class="d-inline-block bg-white p-2 rounded-3"></div>
+          </div>
+        </div>
+        <div class="modal-footer border-secondary border-opacity-25 justify-content-center">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Confirmar Eliminación -->
+  <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content modal-content-custom border-danger">
+        <div class="modal-header border-secondary border-opacity-25">
+          <h5 class="modal-title fw-bold text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Eliminar</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center p-3">
+          <p class="text-light mb-2">¿Estás seguro de que deseas eliminar a <strong id="deleteStudentName" class="text-white">---</strong>?</p>
+          <p class="text-secondary small m-0">Esta acción no se puede deshacer y eliminará su registro y carnet.</p>
+        </div>
+        <div class="modal-footer border-secondary border-opacity-25 justify-content-center">
+          <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-sm btn-danger rounded-pill px-3" id="btnConfirmDelete">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Cambiar Credenciales -->
+  <div class="modal fade" id="changePassModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-content-custom border-warning border-opacity-50">
+        <div class="modal-header border-secondary border-opacity-25">
+          <h5 class="modal-title fw-bold text-warning"><i class="bi bi-key-fill me-2"></i>Cambiar Credenciales de Administrador</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="formChangePass">
+          <div class="modal-body p-4">
+            <div id="changePassAlert" class="alert alert-danger py-2 px-3 small d-none mb-3"></div>
+            
+            <div class="mb-3">
+              <label class="form-label text-light small fw-semibold">Contraseña Actual <span class="text-danger">*</span></label>
+              <input type="password" id="currPass" class="form-control form-control-sm bg-dark text-white border-secondary" required placeholder="Ingresa contraseña actual">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-light small fw-semibold">Nuevo Usuario <span class="text-danger">*</span></label>
+              <input type="text" id="newUsuario" class="form-control form-control-sm bg-dark text-white border-secondary" required value="admin" placeholder="Ej. admin">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-light small fw-semibold">Nueva Contraseña <span class="text-danger">*</span></label>
+              <input type="password" id="newPass" class="form-control form-control-sm bg-dark text-white border-secondary" required placeholder="Mínimo 3 caracteres">
+            </div>
+          </div>
+          <div class="modal-footer border-secondary border-opacity-25">
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-sm btn-warning rounded-pill px-4 fw-semibold" id="btnSavePass">Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let institucionesList = {{ instituciones_json }};
+
+    function loadInstitucionesTable() {
+      fetch('/api/instituciones')
+        .then(res => res.json())
+        .then(data => {
+          institucionesList = data;
+          renderInstitucionesTable();
+          populateInstitutionFilter();
+        })
+        .catch(err => console.error('Error cargando instituciones:', err));
+    }
+
+    function renderInstitucionesTable() {
+      const tbody = document.getElementById('tbodyInstituciones');
+      if (!tbody) return;
+
+      if (!institucionesList || institucionesList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-secondary">No hay instituciones registradas aún.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = institucionesList.map(inst => `
+        <tr>
+          <td>
+            <img src="${inst.logo_url || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=100'}" alt="${inst.nombre}" style="width: 38px; height: 38px; object-fit: cover; border-radius: 8px;">
+          </td>
+          <td>
+            <div class="fw-bold text-white">${inst.nombre}</div>
+            <div class="text-secondary small" style="font-size: 0.72rem;">Código: ${inst.codigo}</div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="rounded-circle" style="width: 14px; height: 14px; background-color: ${inst.color_primario || '#0284c7'}; display: inline-block;"></span>
+              <span class="small text-light">${inst.diseno_carnet || 'Clásico'}</span>
+            </div>
+          </td>
+          <td class="text-center">
+            <span class="badge bg-info bg-opacity-20 text-info border border-info rounded-pill px-2.5">
+              ${inst.estudiantes_count || 0} alumnos
+            </span>
+          </td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-info rounded-pill px-2 me-1" onclick="editInstitucion('${inst.id}')" title="Editar">
+              <i class="bi bi-pencil-fill"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger rounded-pill px-2" onclick="deleteInstitucion('${inst.id}', '${inst.nombre.replace(/'/g, "\\'")}')" title="Eliminar">
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function populateInstitutionFilter() {
+      const select = document.getElementById('institutionFilter');
+      if (!select) return;
+
+      const currentVal = select.value;
+      select.innerHTML = '<option value="todas">Todas las Instituciones</option>' + 
+        institucionesList.map(inst => `<option value="${inst.id}">${inst.nombre}</option>`).join('');
+
+      if (currentVal && Array.from(select.options).some(o => o.value === currentVal)) {
+        select.value = currentVal;
+      }
+    }
+
+    function editInstitucion(id) {
+      const inst = institucionesList.find(i => i.id === id);
+      if (!inst) return;
+
+      document.getElementById('instId').value = inst.id;
+      document.getElementById('instNombre').value = inst.nombre;
+      document.getElementById('instCodigo').value = inst.codigo || '';
+      document.getElementById('instLogoText').value = inst.logo_url || '';
+      document.getElementById('instFondoText').value = inst.fondo_url || '';
+      document.getElementById('instColor').value = inst.color_primario || '#0284c7';
+      document.getElementById('instColorCode').textContent = inst.color_primario || '#0284c7';
+      document.getElementById('instDiseno').value = inst.diseno_carnet || 'clasico';
+      document.getElementById('instDesc').value = inst.descripcion || '';
+
+      document.getElementById('instFormTitle').innerHTML = '<i class="bi bi-pencil-square me-1 text-info"></i> Editar Institución';
+      document.getElementById('btnSaveInst').textContent = 'Actualizar Institución';
+    }
+
+    function resetInstForm() {
+      document.getElementById('formInstitucion').reset();
+      document.getElementById('instId').value = '';
+      document.getElementById('instColorCode').textContent = '#0284c7';
+      document.getElementById('instFormTitle').innerHTML = '<i class="bi bi-plus-circle me-1 text-info"></i> Crear / Editar Institución';
+      document.getElementById('btnSaveInst').textContent = 'Guardar Institución';
+    }
+
+    document.getElementById('instColor').addEventListener('input', function() {
+      document.getElementById('instColorCode').textContent = this.value;
+    });
+
+    document.getElementById('formInstitucion').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSaveInst');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Guardando...';
+
+      const formData = new FormData(this);
+
+      try {
+        const res = await fetch('/api/institucion', {
+          method: 'POST',
+          headers: {
+            'X-Admin-Token': 'authenticated'
+          },
+          credentials: 'include',
+          body: formData
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast('Éxito', data.message, 'success');
+          resetInstForm();
+          loadInstitucionesTable();
+          setTimeout(() => location.reload(), 600);
+        } else {
+          showToast('Error', data.message || 'Error guardando institución', 'danger');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Error', 'Error de conexión al servidor', 'danger');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Guardar Institución';
+      }
+    });
+
+    async function deleteInstitucion(id, nombre) {
+      if (!confirm(`¿Eliminar la institución "${nombre}"?`)) return;
+
+      try {
+        const res = await fetch(`/api/institucion/${id}`, {
+          method: 'DELETE',
+          headers: { 'X-Admin-Token': 'authenticated' },
+          credentials: 'include'
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast('Éxito', data.message, 'success');
+          loadInstitucionesTable();
+        } else {
+          showToast('Error', data.message, 'danger');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Error', 'Error al eliminar institución', 'danger');
+      }
+    }
+
+    function toggleExtrasInput(id) {
+      const switchEl = document.getElementById(`switch_${id}`);
+      const cantEl = document.getElementById(`cant_${id}`);
+      if (switchEl.checked) {
+        cantEl.classList.remove('d-none');
+        if (cantEl.value === '0') cantEl.value = '1';
+      } else {
+        cantEl.classList.add('d-none');
+      }
+    }
+
+    function saveExtras(id) {
+      const switchEl = document.getElementById(`switch_${id}`);
+      const cantEl = document.getElementById(`cant_${id}`);
+      
+      const hasExtras = switchEl.checked;
+      const cant = hasExtras ? parseInt(cantEl.value || '0', 10) : 0;
+
+      fetch('/api/actualizar_fotos_extras', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Admin-Token': 'authenticated'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          estudiante_id: id,
+          fotos_extras: hasExtras,
+          cantidad_fotos_extras: cant
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          showToast('Actualizado', data.message, 'success');
+        } else {
+          showToast('Error', data.message, 'danger');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        showToast('Error', 'No se pudo conectar con el servidor', 'danger');
+      });
+    }
+
+    let currentSortField = 'order'; // 'order' or 'name'
+    let currentSortDir = 'asc';    // 'asc' or 'desc'
+
+    function applyTableFilters() {
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+      const instFilter = document.getElementById('institutionFilter').value;
+      const clearBtn = document.getElementById('clearSearchBtn');
+      
+      if (clearBtn) {
+        if (query.length > 0) clearBtn.classList.remove('d-none');
+        else clearBtn.classList.add('d-none');
+      }
+
+      const tbody = document.querySelector('#studentsTable tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr[data-status]'));
+      let visibleCount = 0;
+
+      rows.forEach(row => {
+        const name = row.getAttribute('data-name') || '';
+        const phone = row.getAttribute('data-phone') || '';
+        const status = row.getAttribute('data-status') || '';
+        const instId = row.getAttribute('data-institucion') || '';
+        const order = row.getAttribute('data-order') || '';
+        const orderFormatted = `#${order}`;
+
+        const matchesQuery = !query || 
+          name.includes(query) || 
+          phone.includes(query) || 
+          order.includes(query) || 
+          orderFormatted.includes(query);
+
+        const matchesStatus = (statusFilter === 'todos') || (status === statusFilter);
+        const matchesInst = (instFilter === 'todas') || (instId === instFilter);
+
+        if (matchesQuery && matchesStatus && matchesInst) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      // Handle No Results row
+      let noResultsRow = document.getElementById('noResultsRow');
+      if (visibleCount === 0 && rows.length > 0) {
+        if (!noResultsRow) {
+          noResultsRow = document.createElement('tr');
+          noResultsRow.id = 'noResultsRow';
+          noResultsRow.innerHTML = `
+            <td colspan="7" class="text-center py-5 text-secondary">
+              <i class="bi bi-search fs-1 d-block mb-2 text-secondary"></i>
+              No se encontraron estudiantes con los filtros aplicados.
+              <div class="mt-2"><button class="btn btn-sm btn-outline-info rounded-pill px-3" onclick="resetFilters()">Restablecer Filtros</button></div>
+            </td>
+          `;
+          tbody.appendChild(noResultsRow);
+        }
+        noResultsRow.style.display = '';
+      } else if (noResultsRow) {
+        noResultsRow.style.display = 'none';
+      }
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('statusFilter').value = 'todos';
+      document.getElementById('institutionFilter').value = 'todas';
+      applyTableFilters();
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      applyTableFilters();
+    }
+
+    function sortTable() {
+      const sortValue = document.getElementById('sortSelect').value;
+      const [field, dir] = sortValue.split('-');
+      currentSortField = field;
+      currentSortDir = dir;
+      
+      updateSortUI();
+      executeSort();
+    }
+
+    function toggleSort(field) {
+      if (currentSortField === field) {
+        currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSortField = field;
+        currentSortDir = 'asc';
+      }
+
+      const sortSelect = document.getElementById('sortSelect');
+      if (sortSelect) {
+        sortSelect.value = `${currentSortField}-${currentSortDir}`;
+      }
+
+      updateSortUI();
+      executeSort();
+    }
+
+    function updateSortUI() {
+      const iconOrder = document.getElementById('sortIconOrder');
+      const iconName = document.getElementById('sortIconName');
+
+      if (iconOrder) {
+        if (currentSortField === 'order') {
+          iconOrder.className = `bi bi-sort-numeric-${currentSortDir === 'asc' ? 'down' : 'up-alt'} ms-1 text-info fw-bold`;
+        } else {
+          iconOrder.className = 'bi bi-arrow-down-up ms-1 text-secondary';
+        }
+      }
+
+      if (iconName) {
+        if (currentSortField === 'name') {
+          iconName.className = `bi bi-sort-alpha-${currentSortDir === 'asc' ? 'down' : 'up-alt'} ms-1 text-info fw-bold`;
+        } else {
+          iconName.className = 'bi bi-arrow-down-up ms-1 text-secondary';
+        }
+      }
+    }
+
+    function executeSort() {
+      const tbody = document.querySelector('#studentsTable tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr[data-status]'));
+
+      rows.sort((a, b) => {
+        if (currentSortField === 'order') {
+          const orderA = parseInt(a.getAttribute('data-order') || '0', 10);
+          const orderB = parseInt(b.getAttribute('data-order') || '0', 10);
+          return currentSortDir === 'asc' ? orderA - orderB : orderB - orderA;
+        } else if (currentSortField === 'name') {
+          const nameA = (a.getAttribute('data-name') || '').toLowerCase();
+          const nameB = (b.getAttribute('data-name') || '').toLowerCase();
+          return currentSortDir === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+        }
+        return 0;
+      });
+
+      rows.forEach(row => tbody.appendChild(row));
+
+      const noResultsRow = document.getElementById('noResultsRow');
+      if (noResultsRow) tbody.appendChild(noResultsRow);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadInstitucionesTable();
+      updateSortUI();
+      executeSort();
+      applyTableFilters();
+
+      const modalInst = document.getElementById('institucionesModal');
+      if (modalInst) {
+        modalInst.addEventListener('show.bs.modal', loadInstitucionesTable);
+      }
+    });
+
+    function openStudentModal(id) {
+      fetch(`/api/estudiante/${id}`, {
+        headers: { 'X-Admin-Token': 'authenticated' },
+        credentials: 'include'
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success) return;
+          const s = data.estudiante;
+
+          document.getElementById('modalAvatar').src = s.foto_url;
+          document.getElementById('modalName').textContent = s.nombre;
+          document.getElementById('modalOrder').textContent = `Orden #${s.numero_orden}`;
+          document.getElementById('modalId').textContent = s.id;
+          document.getElementById('modalInstitucion').textContent = s.institucion_nombre || 'Sin Institución';
+          document.getElementById('modalPhone').textContent = s.telefono;
+          document.getElementById('modalCurso').textContent = s.curso || 'No especificado';
+          document.getElementById('modalTanda').textContent = s.tanda || 'No especificada';
+          
+          const statusBadge = s.estado === 'Presente' 
+            ? '<span class="text-success"><i class="bi bi-check-circle-fill"></i> Presente</span>'
+            : '<span class="text-warning"><i class="bi bi-clock"></i> Pendiente</span>';
+          document.getElementById('modalStatus').innerHTML = statusBadge;
+
+          document.getElementById('modalTime').textContent = s.hora_llegada || 'Aún no ingresa';
+          
+          const extrasText = s.fotos_extras ? `Sí (${s.cantidad_fotos_extras} fotos)` : 'No';
+          document.getElementById('modalExtras').textContent = extrasText;
+          document.getElementById('modalDate').textContent = s.fecha_registro || '-';
+
+          // Generar QR
+          const qrContainer = document.getElementById('modalQrcode');
+          qrContainer.innerHTML = '';
+          new QRCode(qrContainer, {
+            text: s.id,
+            width: 110,
+            height: 110
+          });
+
+          const modal = new bootstrap.Modal(document.getElementById('studentModal'));
+          modal.show();
+        });
+    }
+
+    let studentToDeleteId = null;
+
+    function confirmDeleteStudent(id, name) {
+      studentToDeleteId = id;
+      const deleteNameEl = document.getElementById('deleteStudentName');
+      if (deleteNameEl) deleteNameEl.textContent = name;
+      const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+      modal.show();
+    }
+
+    document.getElementById('btnConfirmDelete').addEventListener('click', async function() {
+      if (!studentToDeleteId) return;
+      
+      const btn = this;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Eliminando...';
+
+      try {
+        const res = await fetch('/api/eliminar_estudiante', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-Admin-Token': 'authenticated'
+          },
+          credentials: 'include',
+          body: JSON.stringify({ estudiante_id: studentToDeleteId })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast('Éxito', data.message || 'Estudiante eliminado', 'success');
+          const modalEl = document.getElementById('deleteConfirmModal');
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) modal.hide();
+
+          setTimeout(() => location.reload(), 400);
+        } else {
+          showToast('Error', data.message || 'No se pudo eliminar el estudiante', 'danger');
+          btn.disabled = false;
+          btn.textContent = 'Eliminar';
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        showToast('Error', 'Error de conexión al eliminar', 'danger');
+        btn.disabled = false;
+        btn.textContent = 'Eliminar';
+      }
+    });
+
+    document.getElementById('formChangePass').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const currPass = document.getElementById('currPass').value;
+      const newUsuario = document.getElementById('newUsuario').value;
+      const newPass = document.getElementById('newPass').value;
+      const alertEl = document.getElementById('changePassAlert');
+      const btn = document.getElementById('btnSavePass');
+
+      alertEl.classList.add('d-none');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Guardando...';
+
+      try {
+        const res = await fetch('/api/cambiar_clave', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-Admin-Token': 'authenticated'
+          },
+          credentials: 'include',
+          body: JSON.stringify({ currentPassword: currPass, newUsuario, newPassword: newPass })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast('Éxito', data.message, 'success');
+          const modalEl = document.getElementById('changePassModal');
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) modal.hide();
+          this.reset();
+        } else {
+          alertEl.textContent = data.message || 'Error al actualizar credenciales.';
+          alertEl.classList.remove('d-none');
+        }
+      } catch (err) {
+        console.error(err);
+        alertEl.textContent = 'Error de conexión con el servidor.';
+        alertEl.classList.remove('d-none');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Guardar Cambios';
+      }
+    });
+
+    function showToast(title, msg, type) {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `position-fixed bottom-0 end-0 p-3 z-3`;
+      alertDiv.style.zIndex = '9999';
+      alertDiv.innerHTML = `
+        <div class="toast show bg-${type} text-white border-0 rounded-3 shadow" role="alert">
+          <div class="toast-body d-flex align-items-center justify-content-between">
+            <div><strong>${title}:</strong> ${msg}</div>
+            <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="toast"></button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 3000);
+    }
+  </script>
+</body>
+</html>

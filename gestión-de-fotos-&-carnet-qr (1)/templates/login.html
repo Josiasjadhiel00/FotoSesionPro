@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión | Acceso Administrativo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #090d16;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .login-card {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+    }
+    .form-control {
+      background-color: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+    }
+    .form-control:focus {
+      background-color: rgba(15, 23, 42, 0.95);
+      border-color: #38bdf8;
+      color: #fff;
+      box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.2);
+    }
+    .btn-gradient {
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      padding: 0.8rem 1.5rem;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    .btn-gradient:hover {
+      background: linear-gradient(135deg, #0369a1 0%, #1d4ed8 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.4);
+      color: #fff;
+    }
+    .input-group-text {
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card p-4 p-sm-5 position-relative">
+    <div class="text-center mb-4">
+      <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-20 text-info p-3 rounded-circle mb-3 border border-info border-opacity-25" style="width: 70px; height: 70px;">
+        <i class="bi bi-shield-lock-fill fs-2"></i>
+      </div>
+      <h3 class="fw-bold text-white mb-1">Acceso Administrador</h3>
+      <p class="text-secondary small mb-0">Inicia sesión para gestionar el panel y el escáner door.</p>
+    </div>
+
+    <div id="jsAlert" class="alert alert-danger bg-danger bg-opacity-20 border-danger text-white rounded-3 small py-2 px-3 mb-4 d-none" role="alert">
+      <i class="bi bi-exclamation-triangle-fill text-danger fs-5 me-2"></i>
+      <span id="jsAlertText"></span>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger bg-danger bg-opacity-20 border-danger text-white rounded-3 small py-2 px-3 mb-4 d-flex align-items-center gap-2" role="alert">
+      <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+      <div>{{ error }}</div>
+    </div>
+    {% endif %}
+
+    <form id="loginForm" action="/login{% if redirect %}?redirect={{ redirect }}{% endif %}" method="POST">
+      <!-- Usuario -->
+      <div class="mb-3">
+        <label for="usuario" class="form-label text-light fw-semibold small">
+          <i class="bi bi-person-fill text-info me-1"></i> Usuario
+        </label>
+        <div class="input-group">
+          <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-person"></i></span>
+          <input type="text" class="form-control" id="usuario" name="usuario" placeholder="Ingresa tu usuario" required autofocus>
+        </div>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="mb-4">
+        <label for="password" class="form-label text-light fw-semibold small">
+          <i class="bi bi-key-fill text-info me-1"></i> Contraseña
+        </label>
+        <div class="input-group">
+          <span class="input-group-text bg-dark border-secondary text-secondary"><i class="bi bi-lock"></i></span>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+          <button class="btn btn-outline-secondary border-secondary text-secondary" type="button" onclick="togglePasswordVisibility()">
+            <i class="bi bi-eye" id="togglePassIcon"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" id="btnLogin" class="btn btn-gradient w-100 mb-3">
+        <i class="bi bi-box-arrow-in-right me-2"></i> Iniciar Sesión
+      </button>
+
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <a href="/registro" class="text-secondary small text-decoration-none hover-white">
+          <i class="bi bi-arrow-left me-1"></i> Formulario Registro
+        </a>
+        <a href="/admin" target="_blank" class="text-info small text-decoration-none">
+          <i class="bi bi-box-arrow-up-right me-1"></i> Abrir en pestaña nueva
+        </a>
+      </div>
+    </form>
+
+    <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 text-center">
+      <div class="badge bg-secondary bg-opacity-20 text-secondary border border-secondary border-opacity-25 rounded-pill px-3 py-2 small fw-normal">
+        <i class="bi bi-info-circle me-1 text-info"></i> Usuario: <strong class="text-white">admin</strong> | Clave: <strong class="text-white">admin</strong>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePasswordVisibility() {
+      const passInput = document.getElementById('password');
+      const icon = document.getElementById('togglePassIcon');
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+      } else {
+        passInput.type = 'password';
+        icon.className = 'bi bi-eye';
+      }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const usuario = document.getElementById('usuario').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const jsAlert = document.getElementById('jsAlert');
+      const jsAlertText = document.getElementById('jsAlertText');
+      const btn = document.getElementById('btnLogin');
+
+      jsAlert.classList.add('d-none');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Verificando...';
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectTarget = urlParams.get('redirect') || '/admin';
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usuario, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          localStorage.setItem('admin_token', 'authenticated');
+          const dest = redirectTarget.includes('?') 
+            ? `${redirectTarget}&token=authenticated` 
+            : `${redirectTarget}?token=authenticated`;
+          window.location.href = dest;
+        } else {
+          jsAlertText.textContent = data.message || 'Usuario o contraseña incorrectos.';
+          jsAlert.classList.remove('d-none');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i> Iniciar Sesión';
+        }
+      } catch (err) {
+        console.error(err);
+        // Fallback to standard form submit if fetch fails
+        this.submit();
+      }
+    });
+
+    // Auto check if already authenticated in localStorage
+    window.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('logout')) {
+        localStorage.removeItem('admin_token');
+        return;
+      }
+
+      const token = localStorage.getItem('admin_token');
+      if (token === 'authenticated') {
+        const redirectTarget = urlParams.get('redirect') || '/admin';
+        try {
+          const res = await fetch('/api/estudiantes', {
+            headers: { 'X-Admin-Token': 'authenticated' },
+            credentials: 'include'
+          });
+          if (res.ok) {
+            const dest = redirectTarget.includes('?') 
+              ? `${redirectTarget}&token=authenticated` 
+              : `${redirectTarget}?token=authenticated`;
+            window.location.href = dest;
+          } else {
+            localStorage.removeItem('admin_token');
+          }
+        } catch (e) {
+          console.log('Session validation failed:', e);
+          localStorage.removeItem('admin_token');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

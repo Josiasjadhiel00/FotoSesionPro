@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "instituciones": {
+      "title": "Instituciones",
+      "description": "Instituciones educativas para el evento de sesión fotográfica",
+      "properties": {
+        "id": { "type": "string" },
+        "nombre": { "type": "string" },
+        "codigo": { "type": "string" },
+        "logo_url": { "type": "string" },
+        "fondo_url": { "type": "string" },
+        "color_primario": { "type": "string" },
+        "diseno_carnet": { "type": "string" },
+        "descripcion": { "type": "string" },
+        "estudiantes_count": { "type": "number" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["id", "nombre"]
+    },
+    "estudiantes": {
+      "title": "Estudiantes",
+      "description": "Estudiantes registrados en las sesiones fotográficas",
+      "properties": {
+        "id": { "type": "string" },
+        "numero_orden": { "type": "number" },
+        "institucion_id": { "type": "string" },
+        "institucion_nombre": { "type": "string" },
+        "nombre": { "type": "string" },
+        "telefono": { "type": "string" },
+        "curso": { "type": "string" },
+        "tanda": { "type": "string" },
+        "foto_url": { "type": "string" },
+        "estado": { "type": "string" },
+        "hora_llegada": { "type": "string" },
+        "fotos_extras": { "type": "boolean" },
+        "cantidad_fotos_extras": { "type": "number" },
+        "fecha_registro": { "type": "string" }
+      },
+      "required": ["id", "nombre", "institucion_id"]
+    }
+  }
+}

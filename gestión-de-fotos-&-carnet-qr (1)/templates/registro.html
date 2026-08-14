@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Estudiante | Selección de Institución</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #0f172a;
+      min-height: 100vh;
+      color: #f8fafc;
+      padding-bottom: 3rem;
+      position: relative;
+    }
+    
+    .bg-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: 0;
+      filter: brightness(0.35) blur(4px);
+      transition: all 0.5s ease;
+    }
+
+    .content-wrapper {
+      position: relative;
+      z-index: 10;
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    /* Institution card style */
+    .inst-card {
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+    .inst-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(56, 189, 248, 0.5);
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5);
+    }
+    .inst-banner {
+      height: 120px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    .inst-logo-box {
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
+      background: #1e293b;
+      border: 3px solid #0f172a;
+      overflow: hidden;
+      position: absolute;
+      bottom: -20px;
+      left: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .inst-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .card-custom {
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    }
+
+    .inst-header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .preview-box {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      border: 3px dashed rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin: 0 auto;
+      background: rgba(15, 23, 42, 0.7);
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .preview-box:hover {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+    }
+    .preview-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .form-control, .form-select {
+      background-color: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+    }
+    .form-control:focus, .form-select:focus {
+      background-color: rgba(15, 23, 42, 0.95);
+      border-color: #38bdf8;
+      color: #fff;
+      box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.25);
+    }
+    .form-select option {
+      background-color: #0f172a;
+      color: #fff;
+    }
+
+    .btn-submit-custom {
+      background-color: {{ selectedInstitucion.color_primario }};
+      background-image: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(0,0,0,0.2));
+      border: none;
+      color: white;
+      font-weight: 700;
+      border-radius: 14px;
+      padding: 0.9rem 1.5rem;
+      transition: all 0.3s ease;
+    }
+    .btn-submit-custom:hover {
+      filter: brightness(1.15);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background overlay when institution is selected -->
+  <div id="bgOverlay" class="bg-overlay" style="{% if selectedInstitucion.fondo_url %}background-image: url('{{ selectedInstitucion.fondo_url }}');{% else %}background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);{% endif %}"></div>
+
+  <div class="content-wrapper">
+    <!-- Navigation -->
+    <nav class="navbar navbar-dark bg-transparent py-3">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/registro">
+          <div class="bg-primary text-white p-2 rounded-3 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+            <i class="bi bi-camera-fill fs-5"></i>
+          </div>
+          <span>FotoSession Pro</span>
+        </a>
+        <div class="d-flex gap-2">
+          <a href="/escanear" class="btn btn-outline-light btn-sm rounded-pill px-3">
+            <i class="bi bi-qr-code-scan me-1"></i> Escáner Door
+          </a>
+          <a href="/admin" class="btn btn-outline-info btn-sm rounded-pill px-3">
+            <i class="bi bi-speedometer2 me-1"></i> Panel Admin
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-2">
+
+      {% if error %}
+      <div class="row justify-content-center">
+        <div class="col-lg-7">
+          <div class="alert alert-danger alert-dismissible fade show rounded-4 border-0 shadow-sm mb-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- MODE 1: SELECT INSTITUTION -->
+      <div id="sectionInstituciones" class="{% if selected_inst_id %}d-none{% endif %}">
+        <div class="text-center mb-5 mt-3">
+          <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-30 rounded-pill px-3 py-2 mb-2">
+            <i class="bi bi-building me-1"></i> Portal de Registro Escolar
+          </span>
+          <h1 class="fw-extrabold text-white display-6 mt-1">Selecciona tu Institución</h1>
+          <p class="text-secondary col-lg-6 mx-auto">
+            Por favor elige la institución o colegio correspondiente para acceder al formulario personalizado y obtener tu carnet de sesión fotográfica.
+          </p>
+        </div>
+
+        <div class="row g-4 justify-content-center" id="gridInstituciones">
+          <!-- Populated by server payload or JS -->
+        </div>
+      </div>
+
+      <!-- MODE 2: REGISTRATION FORM FOR SELECTED INSTITUTION -->
+      <div id="sectionFormulario" class="row justify-content-center {% if not selected_inst_id %}d-none{% endif %}">
+        <div class="col-lg-6 col-md-8">
+          
+          <!-- Back button -->
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <a href="/registro" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1 text-decoration-none">
+              <i class="bi bi-arrow-left me-1"></i> Cambiar Institución
+            </a>
+            <span class="inst-header-badge text-light">
+              <span class="d-inline-block rounded-circle" style="width: 10px; height: 10px; background-color: {{ selectedInstitucion.color_primario }};"></span>
+              {{ selectedInstitucion.codigo }}
+            </span>
+          </div>
+
+          <div class="card card-custom p-4 p-md-5">
+            
+            <!-- Institution Header -->
+            <div class="text-center mb-4">
+              {% if selectedInstitucion.logo_url %}
+              <div class="mb-3 d-inline-block">
+                <img src="{{ selectedInstitucion.logo_url }}" alt="Logo" class="rounded-4 shadow" style="width: 80px; height: 80px; object-fit: cover; border: 3px solid rgba(255,255,255,0.2);">
+              </div>
+              {% endif %}
+              <h2 class="fw-bold text-white mb-1">{{ selectedInstitucion.nombre }}</h2>
+              <p class="text-secondary small mb-0">Registro de Estudiantes para Sesión Fotográfica y Carnet Digital</p>
+            </div>
+
+            <form action="/registro" method="POST" enctype="multipart/form-data" id="registroForm">
+              
+              <!-- Hidden Institution ID -->
+              <input type="hidden" name="institucion_id" id="inputInstitucionId" value="{{ selectedInstitucion.id }}">
+
+              <!-- Foto de Rostro -->
+              <div class="mb-4 text-center">
+                <label class="form-label text-light fw-semibold d-block mb-2">
+                  <i class="bi bi-camera-fill me-1" style="color: {{ selectedInstitucion.color_primario }};"></i>
+                  Foto del Rostro <span class="text-danger">*</span>
+                </label>
+                <div class="preview-box mb-2" id="previewContainer" onclick="document.getElementById('foto').click()">
+                  <div id="previewPlaceholder" class="text-center p-2">
+                    <i class="bi bi-camera-fill fs-2 text-secondary"></i>
+                    <div class="small text-secondary mt-1" style="font-size: 0.75rem;">Clic para tomar o subir foto</div>
+                  </div>
+                  <img id="imagePreview" class="preview-img d-none" alt="Vista previa">
+                </div>
+                <input type="file" class="d-none" id="foto" name="foto" accept="image/*" required onchange="previewImage(this)">
+                <div class="form-text text-secondary small">Asegúrate de mostrar tu rostro claramente y con buena iluminación.</div>
+              </div>
+
+              <!-- Nombre Completo -->
+              <div class="mb-3">
+                <label for="nombre" class="form-label text-light fw-semibold">
+                  <i class="bi bi-person-fill me-1" style="color: {{ selectedInstitucion.color_primario }};"></i>
+                  Nombre Completo <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required autocomplete="name">
+              </div>
+
+              <!-- Teléfono y Tanda -->
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="telefono" class="form-label text-light fw-semibold">
+                    <i class="bi bi-telephone-fill me-1" style="color: {{ selectedInstitucion.color_primario }};"></i>
+                    Teléfono <span class="text-danger">*</span>
+                  </label>
+                  <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="Ej. 809-555-0199" required autocomplete="tel">
+                </div>
+
+                <div class="col-md-6">
+                  <label for="tanda" class="form-label text-light fw-semibold">
+                    <i class="bi bi-sun-fill me-1" style="color: {{ selectedInstitucion.color_primario }};"></i>
+                    Tanda <span class="text-danger">*</span>
+                  </label>
+                  <select class="form-select" id="tanda" name="tanda" required>
+                    <option value="" disabled selected>Selecciona Tanda...</option>
+                    <option value="Tanda Matutina">Tanda Matutina</option>
+                    <option value="Tanda Vespertina">Tanda Vespertina</option>
+                    <option value="Tanda Nocturna">Tanda Nocturna</option>
+                    <option value="Jornada Extendida">Jornada Extendida</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Curso / Sección -->
+              <div class="mb-4">
+                <label for="curso" class="form-label text-light fw-semibold">
+                  <i class="bi bi-mortarboard-fill me-1" style="color: {{ selectedInstitucion.color_primario }};"></i>
+                  Curso / Grado / Sección <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" id="curso" name="curso" placeholder="Ej. 6to Primaria - Sección A" required>
+              </div>
+
+              <!-- Info sobre turno -->
+              <div class="p-3 mb-4 rounded-3 bg-dark bg-opacity-60 border border-secondary border-opacity-25 d-flex align-items-center gap-3">
+                <div class="fs-3" style="color: {{ selectedInstitucion.color_primario }};"><i class="bi bi-ticket-perforated-fill"></i></div>
+                <div class="small text-light">
+                  <strong>Asignación Automática de Turno:</strong> Al completar el formulario obtendrás tu carnet escolar digital con tu número de orden en la fila.
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid">
+                <button type="submit" class="btn btn-submit-custom d-flex align-items-center justify-content-center gap-2" id="btnSubmit">
+                  <span>Registrarme y Obtener Carnet</span>
+                  <i class="bi bi-arrow-right-short fs-4"></i>
+                </button>
+              </div>
+
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const instituciones = {{ instituciones_json }};
+
+    function renderInstitucionesGrid() {
+      const grid = document.getElementById('gridInstituciones');
+      if (!grid) return;
+
+      if (!instituciones || instituciones.length === 0) {
+        grid.innerHTML = `
+          <div class="col-12 text-center py-5">
+            <i class="bi bi-building-exclamation fs-1 text-secondary d-block mb-3"></i>
+            <p class="text-secondary">No hay instituciones registradas actualmente.</p>
+            <a href="/admin" class="btn btn-info btn-sm rounded-pill px-3">Configurar Instituciones en el Panel Admin</a>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = instituciones.map(inst => `
+        <div class="col-md-6 col-lg-4">
+          <div class="inst-card h-100 d-flex flex-column" onclick="selectInstitucion('${inst.id}')">
+            <div class="inst-banner" style="background-image: url('${inst.fondo_url || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=80'}');">
+              <div class="inst-logo-box">
+                <img src="${inst.logo_url || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=300&auto=format&fit=crop&q=80'}" alt="${inst.nombre}" class="inst-logo-img">
+              </div>
+            </div>
+            <div class="p-4 pt-4 flex-grow-1 d-flex flex-column justify-content-between mt-2">
+              <div>
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                  <span class="badge rounded-pill px-2.5 py-1" style="background-color: ${inst.color_primario || '#0284c7'}; color: #fff; font-size: 0.75rem;">
+                    ${inst.codigo || 'INST'}
+                  </span>
+                  <span class="text-secondary small" style="font-size: 0.75rem;">Diseño: ${inst.diseno_carnet || 'Clásico'}</span>
+                </div>
+                <h4 class="fw-bold text-white mb-2 fs-5">${inst.nombre}</h4>
+                <p class="text-secondary small mb-3">${inst.descripcion || 'Sesión fotográfica escolar y carnet digital.'}</p>
+              </div>
+              <div class="pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-between">
+                <span class="small fw-semibold" style="color: ${inst.color_primario || '#38bdf8'};">Ingresar al Formulario</span>
+                <i class="bi bi-arrow-right-circle-fill fs-5" style="color: ${inst.color_primario || '#38bdf8'};"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectInstitucion(instId) {
+      window.location.href = `/registro?inst_id=${instId}`;
+    }
+
+    function previewImage(input) {
+      const file = input.files[0];
+      if (file) {
+        if (!file.type.startsWith('image/')) {
+          alert('Por favor selecciona un archivo de imagen válido.');
+          input.value = '';
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const previewImg = document.getElementById('imagePreview');
+          const placeholder = document.getElementById('previewPlaceholder');
+          previewImg.src = e.target.result;
+          previewImg.classList.remove('d-none');
+          placeholder.classList.add('d-none');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderInstitucionesGrid();
+
+      const form = document.getElementById('registroForm');
+      if (form) {
+        form.addEventListener('submit', function() {
+          const btn = document.getElementById('btnSubmit');
+          btn.disabled = true;
+          btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Procesando registro...';
+        });
+      }
+    });
+  </script>
+</body>
+</html>
