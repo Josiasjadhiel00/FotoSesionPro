@@ -1,0 +1,6 @@
+{
+  "name": "Gestión de Fotos & Carnet QR",
+  "description": "Sistema de registro de estudiantes para sesiones fotográficas, generación de carnet digital con QR, escáner de control de acceso y panel de administración.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
